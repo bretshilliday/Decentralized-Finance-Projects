@@ -94,7 +94,7 @@ function main(inputFile::String, event::String, pools)
         # Sort cronologically
         sortChrono(poolFrame)
         # Export the time data with the price for plotting
-        CSV.write("/home/bret.shilliday/Decentrailized Finance Projects/Assignments/Assignment 3/CSV/$pool.csv", select(poolFrame, [:tx_hash, :data0, :data1, :data2, :data3, :price]))
+        CSV.write("/home/bret.shilliday/Decentrailized Finance Projects/Assignments/Assignment 3/CSV/$pool.csv", select(poolFrame, [:tx_hash, :signed_at, :data0, :data1, :data2, :data3, :price]))
     end
 end
 
