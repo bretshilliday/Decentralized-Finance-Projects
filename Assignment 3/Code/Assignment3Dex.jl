@@ -42,7 +42,11 @@ end
 
 # Takes the dataframe and sorts the transactions as well as cleans up the data
 function prepareData(df::DataFrame)
-    # df.amount_sent = parse.(Int, df.data0, base=16) # Converts the amount sent in data0 to be a decimal number rather than a Hexidecimal String
+    df.data0 = parse.(BigInt, df.data0, base=16)
+    df.data1 = parse.(BigInt, df.data1, base=16)
+    df.data2 = parse.(BigInt, df.data2, base=16)
+    df.data3 = parse.(BigInt, df.data3, base=16)
+    df.price .= BigFloat(0)
     return df
     #=
     Other Useful Things:
@@ -62,7 +66,13 @@ function getEvents(df, event)
 end
 
 function calculatePriceAtSwap(df)
-    
+    for row in eachrow(df)
+        if (row.data0 == 0)
+            row.price = BigFloat(row.data2/row.data1) * BigFloat(1000000000000)
+        else
+            row.price = BigFloat(row.data0/row.data3) * BigFloat(1000000000000)
+        end
+    end
 end
 
 function sortChrono(df)
@@ -73,19 +83,18 @@ function main(inputFile::String, event::String, pools)
     inputDataframe = loadData(inputFile)
     for pool in pools
         poolFrame = copy(inputDataframe)
-        # Clean up data
-        # prepareData(poolFrame)
         # Get just that pool
         getPool(poolFrame, pool)
         # Get just the swap events
-        # getEvents(poolFrame, event)
+        getEvents(poolFrame, event)
+        # Clean up data
+        prepareData(poolFrame)
         # Calculate the price at each swap
-        # calculatePriceAtSwap(poolFrame)
+        calculatePriceAtSwap(poolFrame)
         # Sort cronologically
-        # sortChrono(poolFrame)
+        sortChrono(poolFrame)
         # Export the time data with the price for plotting
-        printData(poolFrame, 5)
-        # CSV.write("/home/bret.shilliday/Decentrailized Finance Projects/Assignments/Assignment 3/CSV/$pool.csv", poolFrame)
+        CSV.write("/home/bret.shilliday/Decentrailized Finance Projects/Assignments/Assignment 3/CSV/$pool.csv", select(poolFrame, [:tx_hash, :signed_at, :data0, :data1, :data2, :data3, :price]))
     end
 end
 
@@ -93,8 +102,8 @@ end
 
 # -- Variables --
 inputFile = "/home/DefiClass2022/databases/dexes/dexes_2022_1.jld2"
-pools = ["7BEA39867E4169DBE237D55C8242A8F2FCDCC387", "8AD599C3A0FF1DE082011EFDDC58F1908EB6E6D8", "88E6A0C2DDD26FEEB64F039A2C41296FCB3F5640", "B4E16D0168E52D35CACD2C6185B44281EC28C9DC"] # [USDC 1, USDC 2, USDC 3]
-event = "C42079F94A6350D7E6235F29174924F928CC2AC818EB64FED8004E115FBCCA67" # Swap Event
+pools = ["397FF1542F962076D0BFE58EA045FFA2D347ACA0", "B4E16D0168E52D35CACD2C6185B44281EC28C9DC"] # Refer to Notes for what these values are
+event = "D78AD95FA46C994B6551D0DA85FC275FE613CE37657FB8D5E3D130840159D822" # Swap Event
 
 # -- Code --
 main(inputFile, event, pools)
