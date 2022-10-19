@@ -94,7 +94,7 @@ function main(inputFile::String, event::String, pools)
         # Sort cronologically
         sortChrono(poolFrame)
         # Export the time data with the price for plotting
-        CSV.write("/home/bret.shilliday/Decentrailized Finance Projects/Assignments/Assignment 3/CSV/$pool.csv", poolFrame)
+        CSV.write("/home/bret.shilliday/Decentrailized Finance Projects/Assignments/Assignment 3/CSV/$pool.csv", select(poolFrame, [:tx_hash, :data0, :data1, :data2, :data3, :price]))
     end
 end
 
@@ -102,7 +102,7 @@ end
 
 # -- Variables --
 inputFile = "/home/DefiClass2022/databases/dexes/dexes_2022_1.jld2"
-pools = ["397FF1542F962076D0BFE58EA045FFA2D347ACA0", "B4E16D0168E52D35CACD2C6185B44281EC28C9DC"] # [USDC 1, USDC 2, USDC 3]
+pools = ["397FF1542F962076D0BFE58EA045FFA2D347ACA0", "B4E16D0168E52D35CACD2C6185B44281EC28C9DC"] # Refer to Notes for what these values are
 event = "D78AD95FA46C994B6551D0DA85FC275FE613CE37657FB8D5E3D130840159D822" # Swap Event
 
 # -- Code --
