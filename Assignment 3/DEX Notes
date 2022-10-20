@@ -44,14 +44,4 @@ What the data fields mean:
 data0 = amount of USDC in
 data1 = amount of ETH in
 data2 = amount of USDC out
-<<<<<<< HEAD
-<<<<<<< HEAD
 data3 = amount of ETH out
-
-Update
-=======
-data3 = amount of USDC out
->>>>>>> e495cc7ec57b749f6b7e0315dcb52cd147cc7cab
-=======
-data3 = amount of USDC out
->>>>>>> e495cc7ec57b749f6b7e0315dcb52cd147cc7cab
