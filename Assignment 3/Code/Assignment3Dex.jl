@@ -67,11 +67,14 @@ end
 
 function calculatePriceAtSwap(df)
     for row in eachrow(df)
-        if (row.data0 == 0)
-            row.price = BigFloat(row.data2/row.data1) * BigFloat(1000000000000)
-        else
-            row.price = BigFloat(row.data0/row.data3) * BigFloat(1000000000000)
-        end
+        USDCamount = row.data0 - row.data2
+        ETHamount = row.data1 - row.data3
+        row.price = -(BigFloat(USDCamount/ETHamount) * BigFloat(1000000000000))
+        # if (row.data0 == 0)
+        #     row.price = BigFloat(row.data2/row.data1) * BigFloat(1000000000000)
+        # else
+        #     row.price = BigFloat(row.data0/row.data3) * BigFloat(1000000000000)
+        # end
     end
 end
 
@@ -79,10 +82,9 @@ function sortChrono(df)
     sort!(df, [:block_height, :tx_offset, :log_offset]) # Sorts the dataframe in place first by Block, then by Transaction Offset then finally by Log Offset so all transactions are in order
 end
 
-function main(inputFile::String, event::String, pools)
-    inputDataframe = loadData(inputFile)
+function main(inputDF, event::String, pools)
     for pool in pools
-        poolFrame = copy(inputDataframe)
+        poolFrame = copy(inputDF)
         # Get just that pool
         getPool(poolFrame, pool)
         # Get just the swap events
@@ -94,7 +96,11 @@ function main(inputFile::String, event::String, pools)
         # Sort cronologically
         sortChrono(poolFrame)
         # Export the time data with the price for plotting
+<<<<<<< HEAD
+        CSV.write("/home/bret.shilliday/Decentrailized Finance Projects/Assignments/Assignment 3/CSV/$pool.csv", select(poolFrame, [:tx_hash, :topic1, :topic2, :signed_at, :data0, :data1, :data2, :data3, :price]))
+=======
         CSV.write("/home/bret.shilliday/Decentrailized Finance Projects/Assignments/Assignment 3/CSV/$pool.csv", select(poolFrame, [:tx_hash, :signed_at, :data0, :data1, :data2, :data3, :price]))
+>>>>>>> e495cc7ec57b749f6b7e0315dcb52cd147cc7cab
     end
 end
 
@@ -106,7 +112,13 @@ pools = ["397FF1542F962076D0BFE58EA045FFA2D347ACA0", "B4E16D0168E52D35CACD2C6185
 event = "D78AD95FA46C994B6551D0DA85FC275FE613CE37657FB8D5E3D130840159D822" # Swap Event
 
 # -- Code --
-main(inputFile, event, pools)
+bigFrame = loadData("/home/DefiClass2022/databases/dexes/dexes_2022_1.jld2")
+for i in 2:10
+    println(i)
+    newFrame = loadData("/home/DefiClass2022/databases/dexes/dexes_2022_$i.jld2")
+    append!(bigFrame, newFrame)
+end
+main(bigFrame, event, pools)
 
 
 # Safekeeping
