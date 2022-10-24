@@ -29,6 +29,7 @@ function loadData(data::String)
     return RawDF
 end
 
+# As the code is spread across 10 different database files, this first bit of code loads them all and constructs them into one big database.
 function main()
     bigFrame = loadData("/home/DefiClass2022/databases/dexes/dexes_2022_1.jld2")
     for i in 2:10
